@@ -6,16 +6,29 @@
 Command command;
 CNCCameraHardware hardware;
 
-void setup() {   
+void setup()
+{
           Serial.begin(9600); 
 }
 
 void loop() {
-          //Serial.println("(Waiting for Command.)");
-
-          // Wait for then parse the data passed for the command to execute.
-          // command.Parse();
+          // Move the camrea up with no control.
+          if ( hardware.AMinLimitSwitch.IsPressed() ) {
+                    hardware.ZStepperMotor.move( 1000, StepperMotorControl::CounterClockwise );
+          }
           
+          // Move the camrea down, as long as there is no endstop triggered.
+          if ( hardware.AMaxLimitSwitch.IsPressed() ) {
+                    if ( !hardware.ZMinLimitSwitch.IsPressed() ) {
+                              hardware.ZStepperMotor.move( 1000, StepperMotorControl::Clockwise );
+                    }
+          }
+          
+          // This "works", but will move the entrie 1000 revolutions before stopping. Need the check deep in the bowels of the move logic, not utside like this.
+}
+
+/*
+  Simple controller.
           if ( !hardware.AMinLimitSwitch.IsReleased() )
           {
             Serial.println("hardware.AMinLimitSwitch.IsPressed()");
@@ -36,34 +49,4 @@ void loop() {
             Serial.println("hardware.ZMaxLimitSwitch.IsPressed()");
             hardware.ZStepperMotor.move( 1000, StepperMotorControl::CounterClockwise );
           }
-          
-          
-          // Execute the commands sent.
-          // command.Execute(hardware);
-
-          //Serial.println("(Command Complete.)");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
