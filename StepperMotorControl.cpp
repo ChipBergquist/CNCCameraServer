@@ -1,12 +1,18 @@
+/*
+          2020-08-10 - Include the limit switches.
+*/
+
 #include "StepperMotorControl.h"
 
 StepperMotorControl::StepperMotorControl() {
 }
 
-StepperMotorControl::StepperMotorControl(int dir_pin, int step_pin, int enable_pin) {
+StepperMotorControl::StepperMotorControl(int dir_pin, int step_pin, int enable_pin, LimitSwitch & minSwitch, LimitSwitch & maxSwitch ) {
           _dir_pin = dir_pin;
           _step_pin = step_pin; 
           _enable_pin = enable_pin;
+          _min = minSwitch;
+          _max = maxSwitch;
           
           pinMode(_dir_pin, OUTPUT);
           pinMode(_step_pin, OUTPUT);
@@ -45,13 +51,16 @@ void StepperMotorControl::move(int steps, DirectionType direction ) {
           int totalSteps = steps;
           float delay = MAX_DELAY;
           _steps_ramp_up = 0;
-
+          
+          // It is not sufficent to just wrap this and not do it.
           if (direction == Clockwise) {
                     digitalWrite(_dir_pin, HIGH);
           }  
           else {
                     digitalWrite(_dir_pin, LOW);
           }
+          // I think we need to set steps = 0.
+          // What else would we need to do?
 
           while (steps > 0) {
                     digitalWrite(_step_pin, HIGH);

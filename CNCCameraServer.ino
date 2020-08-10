@@ -1,4 +1,10 @@
+/*
+          2020-08-10 - Test math for stepper motor microstep impact.
+                       Control motors with limit switches.
+*/
+
 #include <Regexp.h>
+#include <stdlib.h>
 
 #include "API.h"
 #include "CNCCameraHardware.h"
@@ -8,20 +14,30 @@ CNCCameraHardware hardware;
 
 void setup()
 {
+          char buff[20];
+
           Serial.begin(9600); 
+          
+          Serial.print("MM_PER_MICROSTEP: ");
+          dtostrf( MM_PER_MICROSTEP, 8, 6, buff);
+          Serial.println(buff);
+
+          Serial.print("DEGREE_PER_MICROSTEP: ");
+          dtostrf( DEGREE_PER_MICROSTEP, 8, 6, buff);
+          Serial.println(buff);
+
+
 }
 
 void loop() {
-          // Move the camrea up with no control.
-          if ( hardware.AMinLimitSwitch.IsPressed() ) {
+          // Move the camrea up.
+          if ( hardware.AMinLimitSwitch.Pressed() ) {
                     hardware.ZStepperMotor.move( 1000, StepperMotorControl::CounterClockwise );
           }
           
-          // Move the camrea down, as long as there is no endstop triggered.
-          if ( hardware.AMaxLimitSwitch.IsPressed() ) {
-                    if ( !hardware.ZMinLimitSwitch.IsPressed() ) {
-                              hardware.ZStepperMotor.move( 1000, StepperMotorControl::Clockwise );
-                    }
+          // Move the camrea down.
+          if ( hardware.AMaxLimitSwitch.Pressed() ) {
+                    hardware.ZStepperMotor.move( 1000, StepperMotorControl::Clockwise );
           }
           
           // This "works", but will move the entrie 1000 revolutions before stopping. Need the check deep in the bowels of the move logic, not utside like this.

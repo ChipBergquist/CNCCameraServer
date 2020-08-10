@@ -1,3 +1,7 @@
+/*
+          2020-08-10 - Simplify to just Pressed().
+*/
+
 #ifndef LIMITSWITCH_H
 #define LIMITSWITCH_H
 
@@ -10,8 +14,8 @@ public:
           
           LimitSwitch();
           LimitSwitch(int pin, SwitchType type);
-          boolean IsReleased(void);
-          boolean IsPressed(void);
+
+          boolean Pressed(void);
 private:
           int _pin;
           LimitSwitch::SwitchType _type;

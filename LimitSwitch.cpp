@@ -1,3 +1,7 @@
+/*
+          2020-08-10 - Simplify to just Pressed().
+*/
+
 #include "LimitSwitch.h"
 
 LimitSwitch::LimitSwitch() {
@@ -9,26 +13,16 @@ LimitSwitch::LimitSwitch(int pin, SwitchType type) {
           _type = type;
 }
 
-boolean LimitSwitch::IsReleased(void) {
-          boolean IsReleased = false;
-          int pin = digitalRead(_pin);
-
-          if (((pin == HIGH) && (_type == NormallyClosed)) || ((pin == LOW) && (_type == NormallyOpen))) {
-                    IsReleased = true;
-          }
-
-          return (IsReleased);
-}
-
-boolean LimitSwitch::IsPressed(void) {
-          boolean IsPressed = false;
+boolean LimitSwitch::Pressed(void) {
+          boolean Pressed = false;
+          
           int pin = digitalRead(_pin);
 
           if (((pin == LOW) && (_type == NormallyClosed)) || ((pin == HIGH) && (_type == NormallyOpen))) {
-                    IsPressed = true;
+                    Pressed = true;
           }
           
-          return (IsPressed);
+          return (Pressed);
 }
 
 

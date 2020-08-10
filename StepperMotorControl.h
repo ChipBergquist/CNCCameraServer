@@ -1,37 +1,40 @@
+/*
+          2020-08-10 - Include the limit switches.
+                       Include calcuations for microstep effects.
+*/
+
 #ifndef STEPPERMOTORCONTROL_H
 #define STEPPERMOTORCONTROL_H
 
 #include "Arduino.h"
+#include "LimitSwitch.h"
 
 // CMB - Find a way to justify these numbers.
 #define MAX_DELAY 600 // Slowest speed we will support.
 #define MIN_DELAY 600 // Fastest possible speed, after already accelerating.
 
 
-/*
-// Constants for supporting commands using Degrees for movement
-// - Math
-#define DEGREES_PER_REVOLUTION 360
+#define DEGREES_PER_REVOLUTION 360.0
 
-// - RAMPS Microsteping Configuration 
-#define MICROSTEPS_PER_STEP 16
+// RAMPS Microsteping Configuration 
+#define MICROSTEPS_PER_STEP 16.0
 
-// - Nema 17 Bipolar Stepper Motor
-#define STEPS_PER_REVOLUTION 200
+// Nema 17 Bipolar Stepper Motor
+#define STEPS_PER_REVOLUTION 200.0
 
-// - Microsteps/Degree of Rotation
-#define MICROSTEPS_PER_DEGREE = MICROSTEPS_PER_STEP * STEPS_PER_REVOLUTION / DEGREES_PER_REVOLUTION;
 
-// - Gear Ratios
-#define TEETH_1 1
-#define TEETH_2 1
-#define TEETH_N 1
-#define GEAR_RATIO TEETH_1 / TEETH_2 / TEETH_N
+// - Gear Sizes
+#define MOTOR_GEAR_TEETH 20.0
+#define PIVOT_GEAR_TEETH 90.0
 
-// - Geared Microsteps/Degree of Rotation
-#define GEARED_MICROSTEPS_PER_DEGREE MICROSTEPS_PER_DEGREE * GEAR_RATIO
-*/
+// - Degree of Rotation/Microstep
+#define DEGREE_PER_MICROSTEP      DEGREES_PER_REVOLUTION * ( MOTOR_GEAR_TEETH / PIVOT_GEAR_TEETH ) / ( MICROSTEPS_PER_STEP * STEPS_PER_REVOLUTION )
 
+// - Z Axis lead screw lead distance
+#define MM_PER_REVOLUTION 8
+
+// - mm/Microstep
+#define MM_PER_MICROSTEP MM_PER_REVOLUTION / ( MICROSTEPS_PER_STEP * STEPS_PER_REVOLUTION )
 
 class StepperMotorControl
 {
@@ -39,7 +42,7 @@ public:
           enum DirectionType { Clockwise, CounterClockwise };
           
           StepperMotorControl();
-          StepperMotorControl(int dir_pin, int step_pin, int enable_pin);
+          StepperMotorControl(int dir_pin, int step_pin, int enable_pin, LimitSwitch & minSwitch, LimitSwitch & maxSwitch );
           
           void move(int steps, DirectionType direction );
 
@@ -48,6 +51,9 @@ private:
           int _step_pin;
           int _enable_pin;
           int _steps_ramp_up = 0;
+          
+          LimitSwitch _min;
+          LimitSwitch _max;
           
           float calculate_step_delay (int steps_total, int steps_remaining, float delay );
 };
