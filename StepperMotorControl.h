@@ -1,6 +1,8 @@
 /*
           2020-08-10 - Include the limit switches.
                        Include calcuations for microstep effects.
+                       There are enough steps that it must be a long.
+                       Added backoff logic for after the switches are tripped.
 */
 
 #ifndef STEPPERMOTORCONTROL_H
@@ -11,7 +13,7 @@
 
 // CMB - Find a way to justify these numbers.
 #define MAX_DELAY 600 // Slowest speed we will support.
-#define MIN_DELAY 600 // Fastest possible speed, after already accelerating.
+#define MIN_DELAY 100 // Fastest possible speed, after already accelerating.
 
 
 #define DEGREES_PER_REVOLUTION 360.0
@@ -44,20 +46,19 @@ public:
           StepperMotorControl();
           StepperMotorControl(int dir_pin, int step_pin, int enable_pin, LimitSwitch & minSwitch, LimitSwitch & maxSwitch );
           
-          void move(int steps, DirectionType direction );
+          long move(long steps, DirectionType direction );
+          void backoff( void );
 
 private:
           int _dir_pin;
           int _step_pin;
           int _enable_pin;
-          int _steps_ramp_up = 0;
+          long _steps_ramp_up = 0;
           
           LimitSwitch _min;
           LimitSwitch _max;
           
-          float calculate_step_delay (int steps_total, int steps_remaining, float delay );
+          float calculate_step_delay (long steps_total, long steps_remaining, float delay );
 };
 
 #endif // STEPPERMOTORCONTROL_H
-
-

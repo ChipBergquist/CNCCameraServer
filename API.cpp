@@ -1,8 +1,8 @@
 /*
           2020-08-10 - Add this comment history approach.
+                       Moved Regexp into project due to complier issues.
+                       Added hooks to command implmentaitons. 
 */
-
-#include <Regexp.h>
 
 #include "API.h"
 
@@ -122,10 +122,14 @@ void Command::Execute(CNCCameraHardware hardware) {
           Serial.println(message);
 
           if (strcmp(name, G0) == 0) {
+                    hardware.G0(hasA, a, hasZ, z);
           }
           else if (strcmp(name, M300) == 0) {
+                    
+                    hardware.M300();
           }
           else if (strcmp(name, M301) == 0) { 
+                    hardware.M301();
           }
           else if (strcmp(name, M302) == 0) {
           }

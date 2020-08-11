@@ -1,6 +1,7 @@
 /*
           2020-08-10 - Refactor RAMPS hardware include file.
                        Send limit switches to stepper motor controllers.
+                       Adjusted tracking data for where the steppers are at currently.
 */
 
 #ifndef CNCCAMERAHARDWARE_H
@@ -8,6 +9,8 @@
 
 #include "LimitSwitch.h"
 #include "StepperMotorControl.h"
+
+#include <Arduino.h>
 
 // RAMPS 1.4 Hardware Pins
 #define X_STEP_PIN         54
@@ -33,26 +36,29 @@ class CNCCameraHardware
 public:  
           CNCCameraHardware(void);
           
-          void G0(void);
+          void G0(bool hasA, float a, bool hasZ, float z);
           void M300(void);
           void M301(void);
 
-//private:
+          void CurrentSettings( void );
+
+private:
           boolean IsCalibrated = false;
           
           LimitSwitch AMinLimitSwitch;
           LimitSwitch AMaxLimitSwitch;
           StepperMotorControl AStepperMotor;
-          static const int AMinWorkingRange = 0;
-          int ACurrentPosition = 0;
-          static const int AMaxWorkingRange = 64000;
+          long AMinWorkingRange = 0;
+          long ACurrentPosition = 0;
+          long AMaxWorkingRange = 0;
 
           LimitSwitch ZMinLimitSwitch;
           LimitSwitch ZMaxLimitSwitch;
           StepperMotorControl ZStepperMotor;
-          static const int ZMinWorkingRange = 0;
-          int ZCurrentPosition = 0;
-          static const int ZMaxWorkingRange = 32000;
+          long ZMinWorkingRange = 0;
+          long ZCurrentPosition = 0;
+          long ZMaxWorkingRange = 0;
+          
 };
 
 #endif // CNCCAMERAHARDWARE_H

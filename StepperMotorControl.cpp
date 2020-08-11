@@ -1,5 +1,9 @@
 /*
           2020-08-10 - Include the limit switches.
+                       There are enough steps that it must be a long.
+                       Added backoff logic for after the switches are tripped.
+                       There are enough steps that it must be a long.
+                       Added backoff logic for after the switches are tripped.
 */
 
 #include "StepperMotorControl.h"
@@ -20,7 +24,7 @@ StepperMotorControl::StepperMotorControl(int dir_pin, int step_pin, int enable_p
           digitalWrite(_enable_pin, LOW);
 }
 
-float StepperMotorControl::calculate_step_delay (int steps_total, int steps_remaining, float delay ) {
+float StepperMotorControl::calculate_step_delay (long steps_total, long steps_remaining, float delay ) {
           float new_delay = delay;
 
           if ( _steps_ramp_up == 0 ) {
@@ -47,26 +51,40 @@ float StepperMotorControl::calculate_step_delay (int steps_total, int steps_rema
           return new_delay;
 }
 
-void StepperMotorControl::move(int steps, DirectionType direction ) {
-          int totalSteps = steps;
+long StepperMotorControl::move(long steps, DirectionType direction ) {
+          long totalSteps = steps;
           float delay = MAX_DELAY;
           _steps_ramp_up = 0;
           
-          // It is not sufficent to just wrap this and not do it.
           if (direction == Clockwise) {
                     digitalWrite(_dir_pin, HIGH);
           }  
           else {
                     digitalWrite(_dir_pin, LOW);
           }
-          // I think we need to set steps = 0.
-          // What else would we need to do?
 
-          while (steps > 0) {
+          while ((steps > 0) && (!_min.Pressed()) && (!_max.Pressed())) {
                     digitalWrite(_step_pin, HIGH);
                     digitalWrite(_step_pin, LOW);
                     delay = calculate_step_delay(totalSteps, steps, delay);
                     delayMicroseconds(delay);
                     --steps;
+          }
+          return totalSteps - steps;
+}
+
+void StepperMotorControl::backoff( void ) {
+          if (_max.Pressed()) {
+                    // direction == Clockwise
+                    digitalWrite(_dir_pin, HIGH);
+          }  
+          else {
+                    digitalWrite(_dir_pin, LOW);
+          }
+
+          while ((_min.Pressed()) || (_max.Pressed())) {
+                    digitalWrite(_step_pin, HIGH);
+                    digitalWrite(_step_pin, LOW);
+                    delayMicroseconds(MAX_DELAY);
           }
 }

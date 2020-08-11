@@ -1,5 +1,6 @@
 /*
           2020-08-10 - Add this comment history approach.
+                       Moved Regexp into project due to complier issues.
 */
 
 #ifndef API_H
@@ -8,6 +9,8 @@
 #include <Arduino.h>
 
 #include "CNCCameraHardware.h"
+#include "Regexp.h"
+
 
 const char G0[] = "G0";
 const char M300[] = "M300";
