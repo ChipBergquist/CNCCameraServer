@@ -1,7 +1,9 @@
 /*
           2020-08-10 - Add this comment history approach.
                        Moved Regexp into project due to complier issues.
-                       Added hooks to command implmentaitons. 
+                       Added hooks to command implmentaitons.
+          2020-08-24 - Added Dx commands for debugging.
+                       Pass hardware by reference. Duh.
 */
 
 #include "API.h"
@@ -95,11 +97,23 @@ void Command::Parse(void) {
                                         z = atof(ms.GetCapture (serialdata, 1));
                                         strcpy(comment, ms.GetCapture (serialdata, 2));
                               }
+                              else if ( ms.Match ("^D1$", 0) == REGEXP_MATCHED ){
+                                        strcpy(name, D1);
+                                        strcpy(comment, ms.GetCapture (serialdata, 0));
+                              }
+                              else if ( ms.Match ("^D2$", 0) == REGEXP_MATCHED ){
+                                        strcpy(name, D2);
+                                        strcpy(comment, ms.GetCapture (serialdata, 0));
+                              }
+                              else if ( ms.Match ("^D3$", 0) == REGEXP_MATCHED ){
+                                        strcpy(name, D3);
+                                        strcpy(comment, ms.GetCapture (serialdata, 0));
+                              }
                     }
           }
 }
 
-void Command::Execute(CNCCameraHardware hardware) {
+void Command::Execute(CNCCameraHardware &hardware) {
 
           String message;
           char buff[100];
@@ -124,8 +138,7 @@ void Command::Execute(CNCCameraHardware hardware) {
           if (strcmp(name, G0) == 0) {
                     hardware.G0(hasA, a, hasZ, z);
           }
-          else if (strcmp(name, M300) == 0) {
-                    
+          else if (strcmp(name, M300) == 0) {   
                     hardware.M300();
           }
           else if (strcmp(name, M301) == 0) { 
@@ -135,6 +148,17 @@ void Command::Execute(CNCCameraHardware hardware) {
           }
           else if (strcmp(name, COMMENT) == 0) {
           }
+          
+          else if (strcmp(name, D1) == 0) {
+                    hardware.CurrentSettings();
+          }          
+          else if (strcmp(name, D2) == 0) {
+                    Serial.println("Execute D2");
+          }          
+          else if (strcmp(name, D3) == 0) {
+                    Serial.println("Execute D3");
+          }
+          
           else if (strcmp(name, INVALID)== 0) {
                     Serial.println("(Invalid Command!)");
           }

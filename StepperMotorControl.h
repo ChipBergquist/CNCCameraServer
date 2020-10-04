@@ -12,8 +12,13 @@
 #include "LimitSwitch.h"
 
 // CMB - Find a way to justify these numbers.
-#define MAX_DELAY 600 // Slowest speed we will support.
-#define MIN_DELAY 100 // Fastest possible speed, after already accelerating.
+// Z Axis
+//#define MAX_DELAY 600 // Slowest speed we will support.
+//#define MIN_DELAY 40 // Fastest possible speed, after already accelerating.
+
+// CMB - Make these parameters to the class.
+#define MAX_DELAY 6000 // Slowest speed we will support.
+#define MIN_DELAY 6000 // Fastest possible speed, after already accelerating.
 
 
 #define DEGREES_PER_REVOLUTION 360.0
